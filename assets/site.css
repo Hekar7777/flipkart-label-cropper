@@ -1,0 +1,328 @@
+/* =====================================================================
+   Flipkart Label Cropper — shared styles for the static content pages
+   (privacy.html, terms.html, about.html, 404.html)
+
+   The tool itself (index.html) keeps its own inline CSS so it stays a
+   single self-contained file that also works offline from file://.
+   These tokens intentionally mirror index.html so the site feels like
+   one product.
+   ===================================================================== */
+
+:root {
+  --indigo: #1d4ed8;
+  --violet: #b45309;
+  --bg: #f5f6f9;
+  --card: #ffffff;
+  --ink: #0b0f16;
+  --ink-2: #3f4956;
+  /* #6b7688 measured 4.22:1 on --bg, under the 4.5:1 WCAG AA minimum for body
+     text. This measures 5.07:1 on --bg. */
+  --muted: #5d6875;
+  --line: #e4e8ee;
+  --bar: #0a0e15;
+  --bar-ink: #eaeef5;
+  --sh-1: 0 1px 2px rgba(11, 15, 22, .05);
+  --sh-2: 0 1px 2px rgba(11, 15, 22, .04), 0 8px 24px -12px rgba(11, 15, 22, .16);
+  --r: 15px;
+  --sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --disp: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --maxw: 1120px;
+  --readw: 760px;
+}
+
+html[data-theme="dark"] {
+  --indigo: #6d9bff;
+  --violet: #f0a231;
+  --bg: #080a0f;
+  --card: #0f141d;
+  --ink: #eef1f7;
+  --ink-2: #b9c2d0;
+  --muted: #8c96a6;
+  --line: #1e2532;
+  --bar: #05070b;
+  --bar-ink: #e4e9f5;
+  --sh-1: 0 1px 2px rgba(0, 0, 0, .55);
+  --sh-2: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 30px -14px rgba(0, 0, 0, .8);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Same two faces as the tool: Plus Jakarta Sans carries anything that names a
+   thing, Inter carries the prose. */
+h1, h2, h3, h4, .brand, .pagehead { font-family: var(--disp); letter-spacing: -.022em; }
+
+a { color: var(--indigo); text-underline-offset: 2px; }
+html[data-theme="dark"] a { color: #7fa8ff; }
+
+/* Theme button: both icons live in the button and CSS picks one, so the toggle
+   never depends on a text glyph. */
+.iconbtn svg { width: 16px; height: 16px; display: block; }
+.iconbtn .i-sun { display: none; }
+html[data-theme="dark"] .iconbtn .i-sun { display: block; }
+html[data-theme="dark"] .iconbtn .i-moon { display: none; }
+a:hover { text-decoration-thickness: 2px; }
+
+/* ------------------------------- app bar ------------------------------- */
+
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bar);
+  color: var(--bar-ink);
+}
+
+.appbar-in {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 20px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -.01em;
+  color: var(--bar-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand svg { width: 28px; height: 28px; display: block; }
+.grow { flex: 1 1 auto; }
+
+.navlink {
+  color: var(--bar-ink);
+  opacity: .82;
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.navlink:hover { opacity: 1; background: rgba(255, 255, 255, .09); text-decoration: none; }
+.navlink.cta {
+  background: var(--indigo);
+  opacity: 1;
+  padding: 7px 14px;
+}
+
+.iconbtn {
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .16);
+  color: var(--bar-ink);
+  border-radius: 9px;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+.iconbtn:hover { background: rgba(255, 255, 255, .16); }
+
+@media (max-width: 720px) {
+  .navlink.hide-sm { display: none; }
+}
+
+/* At 320-420px the wordmark, the call-to-action link and the theme button
+   together are wider than the bar. Tightening the gutter and the gaps was
+   enough when the wordmark was nine characters; "Flipkart Label Cropper" is
+   twenty-one, so the wordmark itself steps down here too. Measured at 360px:
+   345px of content in a 360px viewport, against 390px before this rule. */
+@media (max-width: 420px) {
+  .appbar-in { padding: 0 10px; gap: 8px; }
+  .brand { font-size: 13px; gap: 8px; }
+  .brand svg { width: 24px; height: 24px; }
+  .navlink { font-size: 13px; padding: 6px 7px; }
+  .navlink.cta { padding: 7px 10px; }
+}
+
+/* Below 340px even that does not fit. The mark goes and the wordmark stays:
+   the name is what has to be readable on a 320px phone, and the tile is the
+   part a returning visitor recognises from the favicon anyway. */
+@media (max-width: 340px) {
+  .brand svg { display: none; }
+}
+
+/* -------------------------------- layout ------------------------------- */
+
+main { flex: 1 0 auto; width: 100%; }
+.wrap { max-width: var(--readw); margin: 0 auto; padding: 34px 20px 64px; }
+.wrap.wide { max-width: var(--maxw); }
+
+.pagehead { margin: 0 0 6px; font-size: 30px; line-height: 1.2; letter-spacing: -.02em; }
+.lede { margin: 0 0 26px; color: var(--muted); font-size: 15.5px; }
+
+.updated {
+  display: inline-block;
+  font-size: 12.5px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 22px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 22px 24px;
+  box-shadow: var(--sh-1);
+  margin: 0 0 18px;
+}
+
+h2 { font-size: 19px; letter-spacing: -.01em; margin: 30px 0 10px; }
+h3 { font-size: 15.5px; margin: 22px 0 8px; }
+p, li { color: var(--ink-2); font-size: 15px; }
+ul, ol { padding-left: 22px; }
+li { margin: 5px 0; }
+strong { color: var(--ink); }
+
+code, .kbd {
+  font-family: var(--mono);
+  font-size: .88em;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 6px;
+  color: var(--ink);
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0 0 26px;
+  list-style: none;
+}
+.toc a {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 13px;
+  color: var(--ink-2);
+}
+.toc a:hover { border-color: var(--indigo); color: var(--indigo); }
+
+.callout {
+  border-left: 3px solid var(--indigo);
+  background: var(--card);
+  border-radius: 0 var(--r) var(--r) 0;
+  padding: 14px 18px;
+  margin: 18px 0;
+  font-size: 14.5px;
+  color: var(--ink-2);
+}
+.callout b { color: var(--ink); }
+
+/* The proof strip on the guide page is three short cards. A 150px track lets
+   all three share one row from about 450px up (auto-fit collapses the spare
+   track and the three stretch to fill), so the third is never orphaned on a
+   line of its own. Below that they stack cleanly. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+@media (max-width: 520px) {
+  .grid:has(.stat-card) { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 18px;
+  box-shadow: var(--sh-1);
+}
+.stat-card .n { font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--indigo); }
+html[data-theme="dark"] .stat-card .n { color: #7fa8ff; }
+.stat-card .l { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+td { color: var(--ink-2); }
+
+.big-cta {
+  display: inline-block;
+  background: var(--indigo);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 12px 22px;
+  border-radius: 11px;
+  box-shadow: var(--sh-2);
+}
+.big-cta:hover { text-decoration: none; filter: brightness(1.07); }
+
+/* -------------------------------- footer ------------------------------- */
+
+.sitefoot {
+  flex-shrink: 0;
+  border-top: 1px solid var(--line);
+  background: var(--card);
+  margin-top: auto;
+}
+.sitefoot-in {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 26px 20px 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+}
+.sitefoot nav { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.sitefoot a { font-size: 13.5px; color: var(--ink-2); text-decoration: none; font-weight: 600; }
+.sitefoot a:hover { color: var(--indigo); }
+.sitefoot .fine { flex-basis: 100%; font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+
+/* ------------------------------- 404 ----------------------------------- */
+
+.err-wrap { text-align: center; padding: 70px 20px 90px; }
+.err-code {
+  font-size: 84px;
+  font-weight: 900;
+  letter-spacing: -.04em;
+  line-height: 1;
+  background: var(--indigo);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@media print {
+  .appbar, .sitefoot { display: none; }
+  body { background: #fff; }
+}

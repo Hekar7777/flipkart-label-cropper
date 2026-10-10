@@ -1,0 +1,22 @@
+# Response headers for Netlify and Cloudflare Pages.
+# NOTE: Vercel does not read this file. The same rules are mirrored in vercel.json,
+# which is what the live site is deployed with - change both together.
+# GitHub Pages does not read this file.
+#
+# Deliberately no Content-Security-Policy here: a correct CSP for this site has
+# to allow cdnjs (the PDF libraries) and Google's ad and consent endpoints, and a
+# wrong one silently breaks the tool or the ads. Add it only if you intend to
+# maintain it - see the note in the report.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Static assets rarely change; the HTML itself should always be revalidated so a
+# deploy is visible immediately.
+/assets/*
+  Cache-Control: public, max-age=604800
+
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate

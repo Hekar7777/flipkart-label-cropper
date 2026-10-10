@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>shot harness</title>
+<style>
+  body { font: 12px monospace; margin: 0; background: #222; color: #ddd; }
+  iframe { border: 0; display: block; position: absolute; left: 0; top: 0; }
+  #log { position: relative; z-index: 5; white-space: pre-wrap; padding: 8px; background: #222c; }
+</style>
+</head>
+<body>
+<iframe id="f"></iframe>
+<div id="log">ready</div>
+<script>
+const f = document.getElementById('f');
+const logEl = document.getElementById('log');
+const log = (...a) => { logEl.textContent = a.join(' '); };
+
+const FONT_CSS_URL = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap';
+
+/* Google's CSS lists one block per subset. Only the latin block is needed and
+   it is the only one worth inlining, so the rest is dropped before the font
+   files are fetched. */
+async function latinFontCss() {
+  const css = await (await fetch(FONT_CSS_URL)).text();
+  const blocks = css.match(/@font-face\s*\{[^}]*\}/g) || [];
+  const keep = blocks.filter((b) => /U\+0000-00FF/i.test(b));
+  const out = [];
+  for (const block of keep) {
+    const url = (block.match(/url\((https:[^)]+)\)/) || [])[1];
+    if (!url) continue;
+    const buf = await (await fetch(url)).arrayBuffer();
+    let bin = '';
+    const bytes = new Uint8Array(buf);
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    out.push(block.replace(url, 'data:font/woff2;base64,' + btoa(bin)));
+  }
+  return { css: out.join('\n'), kept: out.length, total: blocks.length };
+}
+
+window.raster = async (opts) => {
+  const W = opts.w || 1440, H = opts.h || 1000, scroll = opts.scroll || 0;
+  const d = f.contentDocument;
+  const w = f.contentWindow;
+
+  if (opts.files) {
+    const names = ['combined-order-A.pdf', 'combined-order-B-multipage.pdf', 'combined-order-F-perforation.pdf', 'corrupted.pdf'];
+    const objs = [];
+    for (const n of names) {
+      const r = await fetch('/dev-test/fixtures/' + n);
+      objs.push(new File([await r.blob()], n, { type: 'application/pdf' }));
+    }
+    w.Flipkart Label Cropper.addFiles(objs);
+    await w.Flipkart Label Cropper.processAll();
+  }
+  if (opts.manual) { w.Flipkart Label Cropper.state.mode = 'manual'; w.Flipkart Label Cropper.openEditor(w.Flipkart Label Cropper.state.files[0], 1); }
+  await w.document.fonts.ready;
+
+  const fonts = await latinFontCss();
+  log('fonts', fonts.kept + '/' + fonts.total, 'scroll', scroll);
+
+  /* Same-origin stylesheets are inlined rather than dropped: the static content
+     pages live in assets/site.css, and without it their inline SVG brand mark
+     renders at its natural size. */
+  let linked = '';
+  for (const l of [...d.querySelectorAll('link[rel="stylesheet"]')]) {
+    /* Resolve against the framed document's own base, not this page's: a bare
+       "assets/site.css" would otherwise be requested from /dev-test/. */
+    let abs;
+    try { abs = new URL(l.getAttribute('href') || '', d.baseURI).href; } catch (e) { continue; }
+    if (!/^https?:\/\/(127\.0\.0\.1|localhost):\d+\//.test(abs)) continue;
+    try { linked += '\n' + (await (await fetch(abs)).text()); } catch (e) {}
+  }
+  const styleText = linked + '\n' + [...d.querySelectorAll('style')].map((s) => s.textContent).join('\n');
+  const html = d.documentElement.cloneNode(true);
+  [...html.querySelectorAll('script')].forEach((s) => s.remove());
+  /* XML comments may not contain "--", and the head has comments like
+     "npm run build -- --url". They carry no styling, so they go. */
+  (function stripComments() {
+    const walk = d.createTreeWalker(html, NodeFilter.SHOW_COMMENT, null);
+    const doomed = [];
+    while (walk.nextNode()) doomed.push(walk.currentNode);
+    doomed.forEach((n) => n.remove());
+  })();
+  [...html.querySelectorAll('style, link')].forEach((s) => s.remove());
+  if (opts.manual) html.querySelector('#modal').removeAttribute('hidden');
+  if (opts.consent) html.querySelector('#consent').removeAttribute('hidden');
+  /* foreignObject content has to be XHTML in the html namespace and has to be
+     well-formed XML, so the clone gets the namespace and is serialised with
+     XMLSerializer rather than outerHTML. */
+  html.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+  html.setAttribute('style', 'margin-top:-' + scroll + 'px');
+  html.querySelector('head').insertAdjacentHTML('beforeend', '<style></style>');
+  html.querySelector('head style').textContent = styleText + '\n' + fonts.css;
+
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + '" height="' + H + '">' +
+    '<foreignObject x="0" y="0" width="' + W + '" height="' + H + '">' +
+    new XMLSerializer().serializeToString(html) +
+    '</foreignObject></svg>';
+
+  const parsed = new DOMParser().parseFromString(svg, 'image/svg+xml');
+  const bad = parsed.querySelector('parsererror');
+  if (bad) throw new Error('svg xml: ' + bad.textContent.slice(0, 200));
+
+  /* The image must be a data: URL. A blob: URL for the same SVG loads and draws
+     fine, but Chromium then treats the canvas as cross-origin and refuses the
+     export — verified both ways before settling on this. */
+  const img = new Image();
+  const loaded = new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('svg image failed to load')); });
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  await loaded;
+
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const ctx = cv.getContext('2d');
+  /* Scrolled captures shift the html box, so the area it no longer covers has
+     to be filled with the page background or it shows as white. */
+  ctx.fillStyle = opts.bg || '#f5f6f9'; ctx.fillRect(0, 0, W, H);
+  ctx.drawImage(img, 0, 0, W, H);
+  const url = cv.toDataURL('image/jpeg', 0.9);
+  const res = await (await fetch('http://127.0.0.1:5199/put?name=' + (opts.name || 'shot') + '.jpg', { method: 'POST', body: url })).text();
+  log(res + '  (' + svg.length + ' svg bytes)');
+  return res;
+};
+
+/* ?w=1440&h=1100&scroll=0&files=1&theme=light&name=desktop-top */
+(async function main() {
+  const p = new URLSearchParams(location.search);
+  const w = +(p.get('w') || 1440), h = +(p.get('h') || 1100);
+  f.width = w; f.height = h;
+  f.src = (p.get('src') || '/index.html') + '?bust=' + Date.now();
+  await new Promise((r) => { f.onload = r; setTimeout(r, 4000); });
+  await new Promise((r) => setTimeout(r, 900));
+  if (p.get('theme') === 'dark') f.contentDocument.documentElement.setAttribute('data-theme', 'dark');
+  if (p.get('scroll')) f.contentDocument.documentElement.style.setProperty('--nope', '0');
+  try {
+    await window.raster({
+      w, h, name: p.get('name') || 'shot',
+      files: p.get('files') === '1',
+      manual: p.get('manual') === '1',
+      consent: p.get('consent') === '1',
+      scroll: +(p.get('scroll') || 0),
+    });
+  } catch (e) { log('ERROR ' + e.message); }
+})();
+</script>
+</body>
+</html>

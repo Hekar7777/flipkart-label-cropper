@@ -1,0 +1,27 @@
+{
+  "name": "flipkart-label-cropper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Split Flipkart combined shipping documents (label + tax invoice) and tight-crop each section into its own PDF.",
+  "keywords": [
+    "pdf",
+    "flipkart",
+    "shipping-label",
+    "tax-invoice",
+    "pdf-lib",
+    "pdfjs"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "node scripts/dev-server.js",
+    "start": "node scripts/dev-server.js",
+    "preview": "node scripts/dev-server.js --open",
+    "build": "node scripts/build-site.js",
+    "check": "node dev-test/check-seo.js",
+    "check:dist": "node dev-test/check-seo.js dist",
+    "fixtures": "node dev-test/make-fixtures.js"
+  }
+}

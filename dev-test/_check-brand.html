@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>brand check</title>
+<style>
+  body { font: 12px monospace; margin: 0; background: #111; color: #eee; }
+  iframe { border: 0; display: block; width: 390px; height: 640px; }
+  pre { white-space: pre-wrap; margin: 0; padding: 10px; }
+</style>
+</head>
+<body>
+<iframe id="f"></iframe>
+<pre id="out">running…</pre>
+<script>
+/* The app bar carries the wordmark, the page links, the theme button and the
+   menu button. "Flipkart Label Cropper" is a much longer wordmark than the old
+   name, so the bar is measured at the narrowest phones the site supports: if
+   the wordmark wraps or the row overflows, it shows up here.
+
+   Run headless, because an iframe of a page inside the editor's preview wedges
+   its renderer:
+
+     chrome --headless=new --virtual-time-budget=15000 --dump-dom \
+       http://127.0.0.1:5174/dev-test/_check-brand.html | grep -A 40 'id="out"'
+*/
+const pages = ['index.html', 'guide.html', 'privacy.html', 'terms.html', '404.html'];
+const widths = [430, 390, 360, 320];
+const f = document.getElementById('f');
+const out = document.getElementById('out');
+const rows = [];
+
+async function measure(page, width) {
+  f.style.width = width + 'px';
+  f.src = '/' + page;
+  await new Promise(r => (f.onload = r));
+  await new Promise(r => setTimeout(r, 150));
+  const d = f.contentDocument, w = f.contentWindow;
+  if (!d || !d.querySelector('.brand')) return { page, width, error: 'no brand' };
+  const b = d.querySelector('.brand').getBoundingClientRect();
+  const bar = d.querySelector('.appbar-in') || d.querySelector('.appbar');
+  const navs = [...d.querySelectorAll('.navlink')].filter(e => e.offsetWidth);
+  return {
+    page, width,
+    wordmark: d.querySelector('.brand').textContent.trim(),
+    brandW: Math.round(b.width),
+    brandH: Math.round(b.height),
+    oneLine: b.height < 40,
+    navs: navs.length,
+    navW: navs.reduce((a, e) => a + Math.round(e.getBoundingClientRect().width), 0),
+    barW: Math.round(bar.getBoundingClientRect().width),
+    pageOverflowX: d.documentElement.scrollWidth - w.innerWidth,
+    wrapped: [...bar.children].some(e => e.getBoundingClientRect().top > b.bottom + 2),
+  };
+}
+
+(async () => {
+  for (const page of pages) {
+    for (const width of widths) rows.push(await measure(page, width));
+  }
+  const bad = rows.filter(r => r.error || !r.oneLine || r.pageOverflowX > 0 || r.wrapped);
+  const text = rows.map(r => r.error
+    ? `${r.page} @${r.width}: ERROR ${r.error}`
+    : `${r.page.padEnd(13)} @${r.width}  brand ${String(r.brandW).padStart(3)}x${r.brandH}` +
+      ` ${r.oneLine ? 'one line' : 'WRAPPED'}` +
+      `  navs ${r.navs}/${r.navW}  bar ${r.barW}` +
+      `  overflowX ${r.pageOverflowX}` + (r.wrapped ? '  ROW WRAPPED' : '')
+  ).join('\n') + '\n\n' + (bad.length ? 'FAIL: ' + bad.length + ' case(s)' : 'PASS: brand fits in the app bar at every width');
+  out.textContent = text;
+  document.title = bad.length ? 'brand-check-fail' : 'brand-check-pass';
+  /* Headless Chrome gives no way to read a result out of the page except the
+     DOM dump, which races the async work here, so the result is posted to the
+     shot sink instead and read from dev-test/shots/. */
+  try {
+    await fetch('http://127.0.0.1:5199/put?name=brand-check.json', {
+      method: 'POST',
+      body: btoa(unescape(encodeURIComponent(JSON.stringify({ rows, bad: bad.length, text })))),
+    });
+  } catch (e) { /* sink not running: the DOM dump is the fallback */ }
+})();
+</script>
+</body>
+</html>

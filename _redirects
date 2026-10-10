@@ -1,0 +1,16 @@
+# Redirect rules for Netlify and Cloudflare Pages.
+# NOTE: Vercel does not read this file. The same three rules are mirrored in
+# vercel.json, which is what the live site is deployed with - change both together.
+# GitHub Pages does not read this file - there, rely on the canonical tags.
+#
+# Why this exists: without it, both / and /index.html serve the same page as two
+# separate URLs, which splits link equity and can look like duplicate content.
+
+# The tool page has one address: the bare root.
+/index.html      /               301
+
+# The guide was originally called about.html; keep any early link working.
+/about.html      /guide.html     301
+
+# Trailing-slash form of the root, in case something links to it that way.
+/index           /               301

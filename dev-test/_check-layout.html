@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>layout harness</title>
+<style>
+  body { font: 13px monospace; margin: 0; background: #111; color: #eee; }
+  #f { border: 0; height: 900px; display: block; background: #fff; }
+  pre { white-space: pre-wrap; margin: 0; padding: 10px; }
+</style>
+</head>
+<body>
+<iframe id="f" src="/index.html" width="1440"></iframe>
+<script>document.getElementById('f').src = '/index.html?bust=' + Date.now();</script>
+<pre id="out">loading…</pre>
+<script>
+const f = document.getElementById('f');
+const out = document.getElementById('out');
+
+const measure = () => {
+  const d = f.contentDocument, w = f.contentWindow;
+  if (!d || !d.querySelector('.bench')) return null;
+  const r = s => { const e = d.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect();
+    return { l: +b.left.toFixed(1), r: +b.right.toFixed(1), w: +b.width.toFixed(1), h: +b.height.toFixed(1) }; };
+  const align = (a, b) => (a && b) ? +(a.l - b.l).toFixed(1) : null;
+  const bench0 = d.querySelector('.bench');
+  const bench = r('.bench'), dz = r('#dropzone'), ci = r('.controls-in'), fl = r('#files'),
+        panel = r('details.panel > summary');
+  return {
+    vw: w.innerWidth,
+    overflowX: d.documentElement.scrollWidth - w.innerWidth,
+    ads: d.documentElement.dataset.ads,
+    cssVersion: w.getComputedStyle(d.documentElement).getPropertyValue('--gut').trim() || 'OLD',
+    benchRadius: w.getComputedStyle(bench0).borderRadius,
+    hero_h1: r('.hero h1'),
+    bench, dz, ci, fl, panel,
+    // left-edge deltas against the drop zone: these must all be ~0
+    // the inset *content* of the control bar must line up with the drop zone
+    d_seg: align(r('.seg'), dz),
+    d_proc_right: (() => { const p = r('#processBtn'); return p && dz ? +(dz.r - p.r).toFixed(1) : null; })(),
+    d_files: align(fl, dz),
+    d_panel: align(panel, dz),
+    hero_h1_h: r('.hero h1') && r('.hero h1').h,
+    tile_w: r('.tile') && r('.tile').w,
+    tiles_per_row: (() => { const t = [...d.querySelectorAll('#crop-modes .tile')];
+      if (t.length < 2) return t.length; return Math.round((t[1].getBoundingClientRect().left - t[0].getBoundingClientRect().left) > 20 ? 1 : 0) || 1; })(),
+    faq_cols: (() => { const t = [...d.querySelectorAll('.faq details')];
+      if (t.length < 2) return 0; return t[0].getBoundingClientRect().top === t[1].getBoundingClientRect().top ? 2 : 1; })(),
+  };
+};
+
+// Does the control bar actually stick? It only can if no ancestor became a
+// scroll container, which is exactly what an overflow:hidden workbench does.
+window.stickyTest = async (width) => {
+  f.width = width;
+  await new Promise(r => setTimeout(r, 400));
+  const d = f.contentDocument, w = f.contentWindow;
+  const bar = d.querySelector('.controls');
+  const h1 = d.querySelector('.hero h1');
+  const y0 = bar.getBoundingClientRect().top;
+  w.scrollTo(0, h1.getBoundingClientRect().height + 400);
+  await new Promise(r => setTimeout(r, 250));
+  const y1 = bar.getBoundingClientRect().top;
+  const barH = w.getComputedStyle(d.documentElement).getPropertyValue('--bar-h').trim();
+  w.scrollTo(0, 0);
+  return { at: width, barTopBefore: +y0.toFixed(1), barTopAfterScroll: +y1.toFixed(1), barH: barH, stuck: y1 >= 55 && y1 <= 62 };
+};
+
+window.harness = async (widths) => {
+  const res = [];
+  for (const w of widths) {
+    f.width = w;
+    await new Promise(r => setTimeout(r, 260));
+    const m = measure();
+    res.push(m ? Object.assign({ at: w }, m) : { at: w, error: 'not loaded' });
+  }
+  out.textContent = JSON.stringify(res, null, 1);
+  return 'done';
+};
+
+f.addEventListener('load', async () => {
+  f.removeEventListener('load', this);
+  await new Promise(r => setTimeout(r, 700));
+  await window.harness([1440, 1280, 1080, 860, 760, 620, 480, 390]);
+  out.textContent += '\n\nsticky: ' + JSON.stringify(await window.stickyTest(1280));
+});
+</script>
+</body>
+</html>

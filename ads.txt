@@ -1,0 +1,18 @@
+# ads.txt — Authorized Digital Sellers
+#
+# This file must be served at the ROOT of your domain, e.g.
+#   https://your-domain.com/ads.txt
+# It is NOT optional: without a correct ads.txt, Google may serve ads on your
+# pages at reduced revenue and AdSense shows an "earnings at risk" warning.
+#
+# Steps:
+#   1. Sign in to AdSense and copy the publisher ID from Account > Settings,
+#      or from Account information (it looks like  pub-0000000000000000 ).
+#   2. Replace the placeholder line below with one that contains YOUR id.
+#   3. Confirm it loads:  https://your-domain.com/ads.txt
+#      AdSense then verifies it under Sites > your site (can take a few hours).
+#
+# Keep the certification authority ID ( f08c47fec0942fa0 ) exactly as it is —
+# that value identifies Google as the seller, and it is the same for everyone.
+
+%%ADS_TXT_LINE%%

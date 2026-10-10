@@ -1,0 +1,17 @@
+# Line endings: store LF in the repository, whatever the developer's OS.
+# Explicit rules here override a global core.autocrlf, which matters because the
+# project is built on Linux (Vercel) from a checkout made on Windows.
+* text=auto eol=lf
+
+# Binaries: never apply text conversion. These default to "text" heuristics that
+# can misclassify PDFs whose bytes happen to look like text, which would corrupt
+# them on a fresh clone.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.gif binary
+*.webp binary
+*.woff binary
+*.woff2 binary

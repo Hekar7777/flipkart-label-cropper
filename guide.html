@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How to Split a Flipkart Label &amp; Invoice PDF (Guide)</title>
+<meta name="description" content="What a combined Flipkart invoice_labels PDF contains, how the crop finds the label and tax invoice, when to use manual crop, and 4x6 thermal printing tips." />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#0a0e15" />
+<link rel="canonical" href="%%SITE_URL%%/guide.html" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Flipkart Label Cropper" />
+<meta property="og:locale" content="en" />
+<meta property="og:url" content="%%SITE_URL%%/guide.html" />
+<meta property="og:title" content="How to split a Flipkart label and tax invoice PDF" />
+<meta property="og:description" content="What a combined Flipkart invoice_labels PDF contains, how the crop decides where the label ends, when to use manual crop, and 4x6 thermal printing tips." />
+<meta property="og:image" content="%%SITE_URL%%/assets/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Flipkart Label Cropper: split a combined Flipkart shipping PDF into a shipping label and a tax invoice" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="How to split a combined Flipkart shipping label and tax invoice PDF" />
+<meta name="twitter:description" content="What a combined Flipkart invoice_labels PDF contains, how the crop decides where the label ends, when to use manual crop, and 4x6 thermal printing tips." />
+<meta name="twitter:image" content="%%SITE_URL%%/assets/og-image.png" />
+
+<!-- Breadcrumbs: the guide sits one level below the tool. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Flipkart Label Cropper", "item": "%%SITE_URL%%/" },
+    { "@type": "ListItem", "position": 2, "name": "How to split a combined Flipkart label and invoice PDF" }
+  ]
+}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d4ed8'/%3E%3Cpath d='M12.4 6.6H6.6v5.8M19.6 6.6h5.8v5.8M25.4 19.6v5.8h-5.8M12.4 25.4H6.6v-5.8' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='11.6' y='11.6' width='8.8' height='8.8' rx='1.6' fill='%23fff'/%3E%3Cpath d='M14.4 15.4v3M16.4 15.4v3M18.4 15.4v3' stroke='%231d4ed8' stroke-width='1.2' stroke-linecap='round' fill='none'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" />
+<link rel="stylesheet" href="assets/site.css" />
+<script>
+  try {
+    var t = localStorage.getItem('ls-theme');
+    if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  } catch (e) {}
+
+  // Replace an unsubstituted canonical with the real address of this page.
+  (function () {
+    var c = document.querySelector('link[rel="canonical"]');
+    if (c && (c.getAttribute('href') || '').indexOf('%%') !== -1 && location.protocol.indexOf('http') === 0) {
+      c.setAttribute('href', location.origin + location.pathname);
+    }
+  })();
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "Split a combined Flipkart shipping label and tax invoice PDF",
+  "description": "Separate a combined Flipkart shipping document into a cropped shipping label PDF and a cropped tax invoice PDF, entirely in the browser.",
+  "totalTime": "PT1M",
+  "tool": [{ "@type": "HowToTool", "name": "Flipkart Label Cropper browser tool" }],
+  "step": [
+    { "@type": "HowToStep", "name": "Open the tool", "text": "Go to the Flipkart Label Cropper tool page. No account or install is required." },
+    { "@type": "HowToStep", "name": "Add your PDFs", "text": "Drag and drop a batch of combined shipping PDFs, or click the drop area to browse. Multi-page files are supported." },
+    { "@type": "HowToStep", "name": "Process the batch", "text": "Press Process all. Each page yields two tightly cropped PDFs, one for the label and one for the invoice." },
+    { "@type": "HowToStep", "name": "Check the previews", "text": "Review the thumbnail of every generated crop. If a layout is unusual, switch to Manual crop and drag the regions." },
+    { "@type": "HowToStep", "name": "Download", "text": "Download the whole batch as one combined PDF of every label and invoice. An output selector also offers labels only, invoices only, or separate per-page PDFs downloaded one by one." }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar-in">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1d4ed8"/><path d="M12.4 6.6H6.6v5.8M19.6 6.6h5.8v5.8M25.4 19.6v5.8h-5.8M12.4 25.4H6.6v-5.8" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="11.6" y="11.6" width="8.8" height="8.8" rx="1.6" fill="#fff"/><path d="M14.4 15.4v3M16.4 15.4v3M18.4 15.4v3" stroke="#1d4ed8" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+      Flipkart Label Cropper
+    </a>
+    <span class="grow"></span>
+    <a class="navlink hide-sm" href="privacy.html">Privacy</a>
+    <a class="navlink hide-sm" href="terms.html">Terms</a>
+    <a class="navlink cta" href="/">Open the tool</a>
+    <button class="iconbtn" id="themeBtn" type="button" aria-label="Switch to dark theme" title="Switch to dark theme">
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 14.7A8.7 8.7 0 1 1 9.3 3.4a7 7 0 0 0 11.3 11.3Z"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <h1 class="pagehead">Splitting combined Flipkart shipping PDFs</h1>
+  <p class="lede">What the document format contains, how Flipkart Label Cropper decides where the label ends and the invoice begins, and how to get clean, print-ready output for a whole batch.</p>
+
+  <p style="margin:0 0 28px"><a class="big-cta" href="/">Open the tool →</a></p>
+
+  <div class="grid">
+    <div class="stat-card"><div class="n">2</div><div class="l">PDFs produced for every input page</div></div>
+    <div class="stat-card"><div class="n">0</div><div class="l">Files uploaded — everything runs locally</div></div>
+    <div class="stat-card"><div class="n">Vector</div><div class="l">Output stays text and barcode, never an image</div></div>
+  </div>
+
+  <h2 id="format">The format these documents use</h2>
+  <p>
+    A Flipkart “combined” shipping document packs two logically separate documents onto one A4 page, stacked
+    vertically:
+  </p>
+  <table>
+    <thead><tr><th>Section</th><th>Approximate position</th><th>Typical contents</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Shipping label</strong></td>
+        <td>Top ~55–60% of the page</td>
+        <td>Courier header, AWB barcode, QR code, ship-to address block, SKU table, a footer barcode, and a “Not for resale” line.</td>
+      </tr>
+      <tr>
+        <td><strong>Tax invoice</strong></td>
+        <td>From the “Tax Invoice” heading to the bottom</td>
+        <td>GSTIN and invoice numbers, billing and shipping addresses, product and HSN table, totals, and the seller signature block.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Because the two sections serve different purposes — one goes on the parcel, the other goes to accounting — they
+    usually need to be separated before printing or archiving. Doing that by hand for a day's worth of orders is
+    slow and error-prone, which is what this tool automates.
+  </p>
+  <p>
+    The download that carries this layout is named <code>invoice_labels_&lt;number&gt;.pdf</code>, one order to a page.
+    If that filename is what sent you looking for an answer, the tool page explains
+    <a href="/#invoice-labels-file">what the invoice_labels PDF contains</a> in more detail.
+  </p>
+
+  <h2 id="how">How the split and crop work</h2>
+  <p>For every page of every file you drop in, the tool runs three steps.</p>
+  <ol>
+    <li>
+      <strong>Find the split line.</strong> The page text is read and searched for the heading <em>“Tax Invoice”</em>.
+      That heading's vertical position marks the boundary between the two sections. If a page has no such heading —
+      an unusual variant, for instance — the tool falls back to a proportional split and says so in its activity log
+      rather than failing.
+    </li>
+    <li>
+      <strong>Measure the printed content.</strong> The page is rendered at high resolution and scanned row by row and
+      column by column to find where ink actually is. Two levels of detection are used: strong ink defines the
+      content, and lighter shading is only included where it touches that content. A crop edge is only ever taken
+      from ink that has real vertical structure — a border, a column of text, a barcode, a QR block. Page furniture
+      such as dashed “cut here” lines, colour bands and page frames supplies only a hairline and is therefore left
+      out, so no blank paper comes along with the label.
+    </li>
+    <li>
+      <strong>Produce the cropped PDF.</strong> The original page's content is copied into a new page sized exactly to
+      the measured box plus your margin. Nothing is rasterised or re-rendered, so text stays selectable and
+      barcodes stay scannable at any print resolution.
+    </li>
+  </ol>
+
+  <h2 id="manual">When to use manual crop</h2>
+  <p>
+    Automatic detection handles the standard combined layout well. Switch to <strong>manual crop</strong> when you
+    are dealing with something non-standard, such as a different paper size, an unusual header, or a document that
+    carries more than two sections.
+  </p>
+  <p>
+    Manual mode opens a live preview of the page with two draggable regions. They are stored as percentages, so they
+    apply consistently to every page and to every file in the batch. You can turn auto-tightening off if you want
+    your region used exactly as drawn.
+  </p>
+
+  <h2 id="printing">Printing tips</h2>
+  <ul>
+    <li><strong>Print at 100% (Actual size), not “fit to page”.</strong> A uniform scale keeps barcode module widths
+      proportional, which is what a scanner reads. The cropped page is already the size of the printed label, so there is
+      no surrounding A4 to trim first.</li>
+    <li><strong>Know your media size.</strong> 4×6 in is 101.6 × 152.4 mm — sold as “100 × 150 mm” — 4×5 in is
+      101.6 × 127 mm, and 3×5 in is 76.2 × 127 mm. The <a href="/#label-sizes">label size table</a> lists each one with
+      what it is used for.</li>
+    <li><strong>Printing on A4? Pack four labels to a sheet.</strong> Switch on <b>4 labels per A4 sheet</b> in the crop
+      controls above the file list, and four cropped labels are placed on one 210 × 297 mm page, each scaled to fit its quarter — the same approach as
+      laying labels out by hand, without the cutting and pasting. Invoice pages follow the sheets at their own size.</li>
+    <li>Keep at least a 5 mm quiet zone around barcodes. A 4–6 pt margin (roughly 1.5–2 mm) is applied by default; increase the margin in Advanced settings if your printer struggles.</li>
+    <li><strong>Print one label first and scan it</strong> before running the rest of the batch. If the scan fails, the
+      usual causes are a “fit to page” setting that rescaled the page, or a print scale set below 100%.</li>
+    <li>Archive the invoice files alongside your books — they retain the original invoice number, date and tax breakdown.</li>
+    <li>Because output is vector, thermal printers produce crisp barcodes without the fuzzy edges you get from a screenshot or a scanned copy.</li>
+    <li>A thermal printer pays for itself in roll stock and saved A4 sheets once you are dispatching daily; below that,
+      printing the label half on A4 at actual size is perfectly serviceable, and this tool gives you the same cropped page
+      either way.</li>
+  </ul>
+
+  <h2 id="privacy">Privacy and security</h2>
+  <p>
+    This tool has no backend. Files are opened with the browser's file API and every step — rendering, measuring,
+    cropping, combining — happens in your tab. Your shipping documents are never uploaded, so customer names,
+    addresses and order numbers stay on your machine. You can even save the page and use it offline. See the
+    <a href="privacy.html">Privacy Policy</a> for the full detail.
+  </p>
+
+  <h2 id="faq">Frequently asked questions</h2>
+
+  <h3>Are my files uploaded anywhere?</h3>
+  <p>No. There is no upload step in the code and no server that receives documents. Everything runs in your browser.</p>
+
+  <h3>What are the output files called?</h3>
+  <p>
+    By default the batch comes back as one combined PDF — every label and its invoice in order, pages at their cropped
+    sizes. Choose <b>Individual PDFs</b> and you get per-page files instead: for <code>order.pdf</code> that is
+    <code>order_label.pdf</code> and <code>order_invoice.pdf</code>, and if a file has several pages each page is
+    numbered: <code>order_p1_label.pdf</code>, <code>order_p1_invoice.pdf</code>, and so on. Labels-only or
+    invoices-only mode keeps the same one-PDF output but with only that section on every page.
+  </p>
+
+  <h3>Can I get just the labels for 4x6 thermal printing?</h3>
+  <p>
+    Yes — set the Output selector to <b>Labels</b> (or <b>Files</b> for one PDF per page). The label pages keep their
+    cropped sizes, so a thermal printer scales the nearest size onto the roll and the invoice never reaches the printer.
+  </p>
+
+  <h3>How many files can I process at once?</h3>
+  <p>
+    Batches of 20 or more are fine. Files are processed a few at a time so the tab stays responsive, and you can stop
+    a batch partway through. If one file is corrupted or password-protected, it is flagged and skipped — the rest of
+    the batch continues.
+  </p>
+
+  <h3>Will the barcodes and QR codes still scan?</h3>
+  <p>
+    Yes. The crop copies the original vector content rather than screenshotting it, so barcode bars, QR modules and
+    text keep their exact geometry. Just make sure the label preview looks complete before you print.
+  </p>
+
+  <h3>Do the output PDFs keep the same proportions?</h3>
+  <p>
+    Yes. A crop only changes how much page surrounds the content, never the content's scale — so the aspect ratio of
+    the printed label is preserved exactly.
+  </p>
+
+  <h3>Does it work with other couriers?</h3>
+  <p>
+    The automatic split looks for a “Tax Invoice” heading and printed-content boundaries, so it often works on any
+    combined label-plus-invoice sheet. For formats that differ significantly, manual crop mode is the reliable route.
+  </p>
+
+  <h3>Is it really free?</h3>
+  <p>
+    Yes — no account, no subscription, no file limits, no watermark. The site is funded by the advertising shown on
+    the page.
+  </p>
+
+  <h2 id="contact">Get in touch</h2>
+  <p>
+    Found a layout the tool gets wrong, or have a suggestion? Email
+    <a href="mailto:%%CONTACT_EMAIL%%">%%CONTACT_EMAIL%%</a> — a sample of the troublesome document format (with any
+    customer data removed) helps a great deal.
+  </p>
+
+  <p style="margin-top:34px"><a href="/">← Back to the tool</a></p>
+</div>
+</main>
+
+<footer class="sitefoot">
+  <div class="sitefoot-in">
+    <nav aria-label="Footer">
+      <a href="/">Tool</a>
+      <a href="guide.html">Guide</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="#" data-consent-settings>Cookie settings</a>
+    </nav>
+    <span class="grow"></span>
+    <p class="fine">Flipkart Label Cropper is an independent tool and is not affiliated with, endorsed by or connected to Flipkart. “Flipkart” is a trademark of its respective owner and is used here only to describe the document format the tool reads. All processing happens in your browser.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var btn = document.getElementById('themeBtn');
+  function paint() {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    var label = dark ? 'Switch to light theme' : 'Switch to dark theme';
+    // The sun and moon are both in the button; CSS shows the right one.
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+  btn.addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('ls-theme', next); } catch (e) {}
+    paint();
+  });
+  paint();
+  document.querySelectorAll('[data-consent-settings]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      location.href = '/?cookie-settings=1';
+    });
+  });
+})();
+</script>
+</body>
+</html>

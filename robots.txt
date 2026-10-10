@@ -1,0 +1,21 @@
+# robots.txt for Flipkart Label Cropper
+#
+# Replace %%SITE_URL%% with your real domain, or run:
+#   npm run build -- --url https://your-domain.com
+
+User-agent: *
+Allow: /
+
+# Nothing here is secret - these are just not pages. Blocking them stops them
+# from being indexed as thin or duplicate content if the repository root is ever
+# served directly instead of the built dist/ folder.
+Disallow: /dist/
+Disallow: /dev-test/
+Disallow: /scripts/
+
+# Deliberately NOT blocked: /assets/ (stylesheets and images) and the four CDN
+# scripts. Google needs to fetch CSS and JS to render the page correctly, and
+# blocking them is one of the most common causes of a "Crawled - currently not
+# indexed" verdict.
+
+Sitemap: %%SITE_URL%%/sitemap.xml

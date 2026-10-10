@@ -1,0 +1,27 @@
+# Runtime artifacts
+dev-server.log
+dev-test/_sink.log
+
+# Screenshots written by dev-test/_shot.html during UI work
+dev-test/shots/
+
+# Publish output from `npm run build` - generated, never edited by hand
+dist/
+
+# Freebuff's local workspace metadata - machine-specific, not part of the site.
+.freebuff/
+
+# Written by the Vercel CLI when a project is linked locally from a terminal.
+# Deploys still work - this folder only caches the project/dashboard link.
+.vercel/
+
+# No dependencies are needed for this project (index.html loads its libraries
+# from CDNs), but ignore the folder in case tooling ever creates it.
+node_modules/
+npm-debug.log*
+.npm/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini

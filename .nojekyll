@@ -1,0 +1,4 @@
+# Presence of this file tells GitHub Pages not to run Jekyll over the site.
+# Without it, Jekyll silently excludes any file or folder whose name starts with
+# an underscore (so _redirects and _headers would vanish) and can otherwise
+# rewrite files. Nothing in this project needs Jekyll processing.
