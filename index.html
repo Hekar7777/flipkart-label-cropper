@@ -66,7 +66,7 @@
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Flipkart Label Cropper — Flipkart label cropper",
+      "name": "Flipkart Label Cropper",
       "url": "%%SITE_URL%%/",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Any (runs in a web browser)",
@@ -86,12 +86,29 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
       "isAccessibleForFree": true,
       "softwareHelp": { "@type": "CreativeWork", "url": "%%SITE_URL%%/guide.html", "name": "Splitting combined Flipkart shipping PDFs" },
-      "screenshot": "%%SITE_URL%%/assets/og-image.png"
+      "screenshot": "%%SITE_URL%%/assets/og-image.png",
+      "publisher": { "@id": "%%SITE_URL%%/#organization" }
     },
     {
       "@type": "WebSite",
       "name": "Flipkart Label Cropper",
-      "url": "%%SITE_URL%%/"
+      "url": "%%SITE_URL%%/",
+      "publisher": { "@id": "%%SITE_URL%%/#organization" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "%%SITE_URL%%/#organization",
+      "name": "Flipkart Label Cropper",
+      "url": "%%SITE_URL%%/",
+      "description": "A free browser tool that splits combined Flipkart shipping documents into tightly cropped shipping-label and tax-invoice PDFs.",
+      "email": "%%CONTACT_EMAIL%%",
+      "image": "%%SITE_URL%%/assets/og-image.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "%%CONTACT_EMAIL%%",
+        "url": "%%SITE_URL%%/"
+      }
     },
     {
       "@type": "BreadcrumbList",
@@ -537,6 +554,15 @@ html[data-theme="dark"] code, html[data-theme="dark"] .kbd { background: var(--b
 }
 .stat b { color: #fff; }
 .dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 3px rgba(74, 222, 128, .18); flex: 0 0 auto; }
+/* The chip's wording is what tips the bar over on a phone. Measured at 360px
+   with crops ready: wordmark + chip + theme button + menu button came to 436px
+   inside a 343px bar, so the page scrolled sideways and the theme button sat
+   off the edge. Stepping the wordmark down does not help, because the chip is
+   the whole of the excess. The number is the part that says "crops are ready",
+   so the words go first and the chip itself goes below 400px (see the narrow
+   rules at the foot of the sheet). Nothing is lost with it: the cards carry
+   their own status pills and the Download button is enabled by the same count. */
+.stat .st-words { display: inline; }
 
 .iconbtn {
   width: 36px; height: 36px; border-radius: var(--r-sm); padding: 0; flex: 0 0 auto;
@@ -772,6 +798,34 @@ body.has-files .bench { margin-top: 18px; }
 #dropzone.compact .dz-full, #dropzone.compact .dz-sub, #dropzone.compact .dz-cta { display: none; }
 #dropzone.compact .dz-mini { display: inline; font-family: var(--disp); font-size: 14.5px; font-weight: 700; }
 
+/* Drag veil. Dropping a file works anywhere on the page, but the only thing that
+   lights up is #dropzone — and once files are loaded that is a single slim row,
+   so the feedback describes far less than the area that actually accepts the
+   drop. This covers the window instead, and shows only while html.dragging is
+   set, so it costs nothing at rest. pointer-events:none keeps it purely
+   decorative: the drop still lands on whatever element is underneath, and the
+   window handler takes it from there. */
+.dragveil {
+  position: fixed; inset: 0; z-index: 88; pointer-events: none;
+  display: none; place-items: center; padding: 24px;
+  background: color-mix(in srgb, var(--bg) 74%, transparent);
+  backdrop-filter: blur(3px);
+}
+html.dragging .dragveil { display: grid; }
+.dragveil-in {
+  display: grid; justify-items: center; gap: 5px; text-align: center;
+  padding: 38px 44px; max-width: 420px;
+  background: var(--card); border: 2px dashed var(--b1); border-radius: var(--r-xl);
+  box-shadow: var(--sh-3), 0 0 0 6px var(--b-ring);
+}
+.dragveil-in .dv-icon { width: 44px; height: 44px; color: var(--b1); margin-bottom: 5px; }
+.dragveil-in b { font-family: var(--disp); font-size: 19px; letter-spacing: -.02em; color: var(--ink); }
+.dragveil-in span { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+@media (max-width: 560px) {
+  .dragveil-in { padding: 28px 20px; }
+  .dragveil-in b { font-size: 16.5px; }
+}
+
 /* control bar — sticky, so the actions stay reachable down a long queue. The
    workbench deliberately has no overflow:hidden: that would make this bar's
    scrollport the card itself, and inside a non-scrolling box sticky never
@@ -859,6 +913,17 @@ body.has-files .bench { margin-top: 18px; }
   font-size: 13px; color: var(--muted); margin-top: 7px;
   display: flex; align-items: center; gap: 11px; flex-wrap: wrap;
 }
+/* Per-file remove, sized to the meta line it sits in rather than to the page's
+   button scale: it is a correction to the list, not a second call to action
+   competing with Process all. It only turns red on hover, so a queue of twenty
+   finished files does not read as twenty warnings. */
+.fremove {
+  font-size: 12px; padding: 5px 9px 5px 8px; gap: 5px;
+  border-radius: var(--r-sm); color: var(--muted);
+  background: transparent; border-color: transparent; box-shadow: none;
+}
+.fremove .ic { width: 12px; height: 12px; }
+.fremove:hover:not(:disabled) { background: var(--err-bg); border-color: transparent; color: var(--err); }
 /* The status pill sits next to the summary it belongs to, not flung to the far
    edge of the card where it reads as detached. */
 
@@ -1340,6 +1405,9 @@ input:focus-visible, button:focus-visible {
   .printpill .pp-full { display: none; }
   .printpill .pp-mini { display: inline; }
   #outputSeg button { padding: 8px 10px; }
+  /* "10 PDFs ready" becomes "10": the count is the signal, the two words around
+     it cost a third of the bar. */
+  .stat .st-words { display: none; }
   .chip { font-size: 13px; padding: 7px 12px; }
   button { font-size: 13.5px; padding: 10px 13px; }
   /* The primary stays the biggest thing in the bar even here, where every
@@ -1377,6 +1445,11 @@ input:focus-visible, button:focus-visible {
      all three on one line. */
   .brand { font-size: 14.5px; gap: 8px; }
   .brand .mark { width: 26px; height: 26px; }
+  /* Below 400px the wordmark and the chip cannot both sit on the bar, and the
+     wordmark is the one that has to stay: it is the page's identity and the way
+     back to the top. The theme button also comes back inside the viewport here,
+     which it did not while the chip was still in the row. */
+  #statChip { display: none; }
   .seg button { padding: 7px 11px; font-size: 12.5px; }
   .chip { font-size: 12.5px; }
   ol.steps > li { padding: 14px 16px 14px 54px; }
@@ -1850,6 +1923,17 @@ input:focus-visible, button:focus-visible {
   </aside>
 </div>
 
+<!-- Shown while a file is dragged over the window. aria-hidden because it is
+     feedback for a drag in progress, not content: a screen reader user gets the
+     result of the drop from the activity log and the queue summary. -->
+<div class="dragveil" aria-hidden="true">
+  <div class="dragveil-in">
+    <svg class="dv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15.5V4.5"/><path d="M7.8 8.7 12 4.5l4.2 4.2"/><path d="M4 15.5v2.6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.6"/></svg>
+    <b>Drop to add to the batch</b>
+    <span>Every page is split on its own — nothing is uploaded.</span>
+  </div>
+</div>
+
 <div class="consent" id="consent" hidden role="dialog" aria-labelledby="consentTitle" aria-describedby="consentBody">
   <div class="consent-in">
     <div class="consent-txt">
@@ -2093,6 +2177,7 @@ document.addEventListener("DOMContentLoaded", function () {
      generated row looks exactly like the static markup, with no emoji glyphs. */
   const ICONS = {
     download: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v10.5M7.5 9.8 12 14.3l4.5-4.5M4.5 19.5h15"/></svg>',
+    remove: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>',
   };
 
   /* Change a button's visible label without destroying the icon inside it.
@@ -2157,6 +2242,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     if (added) info("Added " + added + " file" + (added === 1 ? "" : "s") + " — " + state.files.length + " in the list.");
     render();
+  }
+
+  /* Take one file out of the batch. Until this existed the only way back from a
+     mis-dropped file was Clear, which threw away every other file with it.
+     Same cleanup as the clear path: a pdf.js document that has been opened is
+     destroyed, or its worker and the page buffers behind it stay alive for the
+     life of the tab. */
+  function removeFile(entry) {
+    if (state.running || state.merging) return;
+    const at = state.files.indexOf(entry);
+    if (at === -1) return;
+    if (entry.__pdfjs) entry.__pdfjs.then(function (d) { try { d.destroy(); } catch (_) {} });
+    /* A removed file must not stay behind an open region editor. */
+    if (editor.entry === entry) closeEditor();
+    state.files.splice(at, 1);
+    render();
+    info("Removed " + entry.name + " from the list.");
   }
 
   /* ======================= pixel measurement primitives =================== */
@@ -3248,7 +3350,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const batchable = outputsForBatch().length;
     statChip.hidden = batchable === 0;
-    statText.textContent = batchable + " PDF" + (batchable === 1 ? "" : "s") + " ready";
+    /* The wording is wrapped so the narrow rules can drop it and keep the count
+       (see .stat .st-words). Written as HTML because setBtnLabel-style text
+       assignment would flatten the span back into the same string. */
+    statText.innerHTML = batchable + '<span class="st-words"> PDF' + (batchable === 1 ? "" : "s") + " ready</span>";
     zipBtn.disabled = batchable === 0 || state.running || state.merging;
     /* The output switch has to show which mode is armed. Without this the
        pressed segment never moved: the mode really was applied (the batch and
@@ -3267,6 +3372,10 @@ document.addEventListener("DOMContentLoaded", function () {
       setBtnLabel(zipBtn, filesOut ? "Download files" : "Download PDF");
     }
     processBtn.disabled = state.running || !state.files.length || !has.pdfjs || !has.pdflib;
+    /* While the batch runs, the primary action is the control the eye is already
+       on. Left as "Process all" and greyed it says nothing, and the only
+       evidence of work is a progress bar further down the card. */
+    setBtnLabel(processBtn, state.running ? "Processing…" : "Process all");
     stopBtn.hidden = !state.running;
     clearBtn.disabled = state.running;
     $("modeAuto").setAttribute("aria-pressed", String(state.mode === "auto"));
@@ -3334,6 +3443,18 @@ document.addEventListener("DOMContentLoaded", function () {
     meta.appendChild(h("span", {
       class: "pill " + e.status,
       text: e.status === "processing" && e.progressLabel ? e.progressLabel : e.status,
+    }));
+    /* Per-file remove. It lives in the meta line because that is the only part
+       of the card the thumbnails never occupy — a corner button would land on
+       top of them — and it is disabled while a batch runs, since splicing the
+       list under a running loop would leave the worker holding a dead entry. */
+    meta.appendChild(h("button", {
+      class: "fremove", type: "button",
+      disabled: state.running || state.merging,
+      title: "Remove " + e.name + " from the list",
+      "aria-label": "Remove " + e.name + " from the list",
+      html: ICONS.remove + '<span class="lbl">Remove</span>',
+      onclick: function () { removeFile(e); },
     }));
     info.appendChild(meta);
 
@@ -3527,6 +3648,32 @@ document.addEventListener("DOMContentLoaded", function () {
     ev.preventDefault();
     if (!ev.target || !dz.contains(ev.target)) addFiles(ev.dataTransfer && ev.dataTransfer.files);
   });
+
+  /* Drag feedback for the whole window. Depth is counted rather than toggled
+     because dragenter/dragleave fire again for every element the pointer
+     crosses: a plain add-on-enter, remove-on-leave flickers the veil off the
+     moment the drag passes over a child. The Files-type check keeps it honest —
+     dragging selected text across the page must not promise a PDF drop. */
+  let dragDepth = 0;
+  function isFileDrag(ev) {
+    const types = ev.dataTransfer && ev.dataTransfer.types;
+    return !!types && Array.prototype.indexOf.call(types, "Files") !== -1;
+  }
+  function setDragging(on) { document.documentElement.classList.toggle("dragging", on); }
+  function endFileDrag() { dragDepth = 0; setDragging(false); }
+  window.addEventListener("dragenter", function (ev) { if (isFileDrag(ev)) { dragDepth++; setDragging(true); } });
+  window.addEventListener("dragleave", function (ev) {
+    if (!isFileDrag(ev)) return;
+    /* relatedTarget is null when the pointer has left the window altogether.
+       Counting that one leave would strand the veil on screen, so it ends the
+       drag outright. */
+    if (!ev.relatedTarget) { endFileDrag(); return; }
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (!dragDepth) setDragging(false);
+  });
+  window.addEventListener("drop", endFileDrag);
+  window.addEventListener("dragend", endFileDrag);
+  window.addEventListener("blur", endFileDrag);
   window.addEventListener("scroll", function () {
     $("appbar").classList.toggle("scrolled", window.scrollY > 4);
   }, { passive: true });

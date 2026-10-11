@@ -43,6 +43,12 @@ window.raster = async (opts) => {
   const W = opts.w || 1440, H = opts.h || 1000, scroll = opts.scroll || 0;
   const d = f.contentDocument;
   const w = f.contentWindow;
+  /* The app exports its test hooks under one camel-cased global (index.html,
+     `window.FlipkartLabelCropper`). A spaced-out name is not a valid
+     identifier, so it has to be read off the window rather than written
+     literally. */
+  const APP = w.FlipkartLabelCropper;
+  if (!APP) throw new Error('app global missing - did index.html rename it?');
 
   if (opts.files) {
     const names = ['combined-order-A.pdf', 'combined-order-B-multipage.pdf', 'combined-order-F-perforation.pdf', 'corrupted.pdf'];
@@ -51,10 +57,10 @@ window.raster = async (opts) => {
       const r = await fetch('/dev-test/fixtures/' + n);
       objs.push(new File([await r.blob()], n, { type: 'application/pdf' }));
     }
-    w.Flipkart Label Cropper.addFiles(objs);
-    await w.Flipkart Label Cropper.processAll();
+    APP.addFiles(objs);
+    await APP.processAll();
   }
-  if (opts.manual) { w.Flipkart Label Cropper.state.mode = 'manual'; w.Flipkart Label Cropper.openEditor(w.Flipkart Label Cropper.state.files[0], 1); }
+  if (opts.manual) { APP.state.mode = 'manual'; APP.openEditor(APP.state.files[0], 1); }
   await w.document.fonts.ready;
 
   const fonts = await latinFontCss();
